@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>To My Love, On Your Birthday</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#04010a;
+    --plum:#170a2b;
+    --plum-2:#230f3d;
+    --violet-deep:#4a1f8a;
+    --violet:#8b3bf0;
+    --violet-bright:#c896ff;
+    --violet-glow:rgba(139,59,240,0.55);
+    --gold:#d8b25c;
+    --gold-light:#f3dfa4;
+    --ink:#f6effb;
+    --muted:#cdb9e6;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{
+    margin:0; padding:0; height:100%;
+    background:var(--black);
+    color:var(--ink);
+    font-family:'Jost',sans-serif;
+    overflow:hidden;
+  }
+  #stage{
+    position:fixed; inset:0;
+    background:
+      radial-gradient(ellipse 65% 50% at 50% 12%, rgba(139,59,240,0.42), transparent 62%),
+      radial-gradient(ellipse 75% 55% at 88% 92%, rgba(139,59,240,0.30), transparent 60%),
+      radial-gradient(ellipse 85% 65% at 8% 88%, rgba(74,31,138,0.55), transparent 60%),
+      radial-gradient(ellipse 50% 40% at 50% 50%, rgba(200,150,255,0.06), transparent 70%),
+      linear-gradient(180deg, #05010c 0%, #12071f 45%, #1c0d33 100%);
+    overflow:hidden;
+  }
+  #stage::after{
+    content:'';
+    position:absolute; inset:0;
+    box-shadow: inset 0 0 18vw rgba(0,0,0,0.72);
+    pointer-events:none;
+  }
+
+  .particle{
+    position:absolute; bottom:-5%; border-radius:50%;
+    opacity:0; pointer-events:none;
+    animation: rise linear infinite;
+  }
+  @keyframes rise{
+    0%{ transform:translateY(0) translateX(0) scale(1); opacity:0; }
+    8%{ opacity:.95; }
+    92%{ opacity:.5; }
+    100%{ transform:translateY(-115vh) translateX(var(--drift,20px)) scale(0.4); opacity:0; }
+  }
+
+  #scene-wrap{
+    position:relative; z-index:2;
+    height:100%; width:100%;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .scene{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center;
+    padding:8vh 7vw;
+    opacity:0;
+    transform:scale(0.97);
+    pointer-events:none;
+    transition:opacity 0.9s ease, transform 0.9s ease;
+  }
+  .scene.active{
+    opacity:1; transform:scale(1); pointer-events:auto;
+  }
+
+  .eyebrow{
+    font-family:'Jost',sans-serif;
+    letter-spacing:0.34em;
+    font-size:11px;
+    color:var(--violet-bright);
+    font-weight:500;
+    margin-bottom:14px;
+    opacity:0.9;
+    text-shadow:0 0 14px rgba(200,150,255,0.5);
+  }
+  .divider{
+    width:54px; height:1px;
+    background:linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin:0 0 26px 0;
+    opacity:0.8;
+  }
+  .line{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:500;
+    font-size:clamp(22px, 4.6vw, 40px);
+    line-height:1.55;
+    max-width:680px;
+    color:var(--ink);
+    margin:0 0 10px 0;
+    opacity:0;
+    transform:translateY(14px);
+    transition:opacity 0.9s ease, transform 0.9s ease;
+  }
+  .line.show{ opacity:1; transform:translateY(0); }
+  .line em{ font-style:italic; color:var(--violet-bright); }
+  .line .accent{ color:var(--gold-light); }
+
+  .glow-title{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:600; font-style:italic;
+    font-size:clamp(30px, 6.5vw, 58px);
+    line-height:1.25;
+    background:linear-gradient(100deg, var(--violet-bright) 0%, var(--gold-light) 45%, var(--violet-bright) 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 0 26px rgba(139,59,240,0.45));
+    margin:0 0 18px 0;
+  }
+
+  .btn{
+    font-family:'Jost',sans-serif;
+    background:rgba(139,59,240,0.10);
+    color:var(--ink);
+    border:1px solid rgba(200,150,255,0.55);
+    padding:13px 36px;
+    border-radius:999px;
+    font-size:13px;
+    letter-spacing:0.14em;
+    cursor:pointer;
+    margin-top:34px;
+    transition:all .35s ease;
+    opacity:0;
+    animation:fadeIn 0.8s ease forwards;
+    animation-delay:0.4s;
+  }
+  .btn:hover{
+    background:rgba(139,59,240,0.22);
+    border-color:var(--gold-light);
+    box-shadow:0 0 26px rgba(139,59,240,0.4);
+    color:var(--gold-light);
+  }
+  @keyframes fadeIn{ to{opacity:1;} }
+
+  .ring{
+    width:78px; height:78px; border-radius:50%;
+    border:1.5px solid var(--violet-bright);
+    box-shadow:0 0 28px rgba(139,59,240,0.55), inset 0 0 16px rgba(139,59,240,0.35);
+    margin-bottom:24px;
+    position:relative;
+  }
+  .ring::after{
+    content:'';
+    position:absolute; top:50%; left:50%; width:10px; height:10px;
+    background:var(--gold-light); border-radius:50%; transform:translate(-50%,-50%);
+    box-shadow:0 0 16px 5px rgba(243,223,164,0.75);
+  }
+
+  .cover-heart{ font-size:36px; margin-bottom:16px; filter:drop-shadow(0 0 16px rgba(139,59,240,0.7)); }
+  .tap-hint{
+    margin-top:42px; font-size:11px; letter-spacing:0.26em; color:var(--muted);
+    animation:pulse 2.2s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{opacity:0.4;} 50%{opacity:1;} }
+
+  .quiz-progress{
+    font-size:11px; letter-spacing:0.22em; color:var(--violet-bright); margin-bottom:16px;
+    text-shadow:0 0 12px rgba(200,150,255,0.4);
+  }
+  .quiz-q{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:clamp(22px, 4.4vw, 32px);
+    font-weight:500;
+    max-width:640px;
+    margin:0 0 30px 0;
+    line-height:1.5;
+    color:var(--ink);
+  }
+  .options{
+    display:flex; flex-direction:column; gap:12px; width:100%; max-width:440px;
+  }
+  .opt{
+    font-family:'Jost',sans-serif;
+    font-size:15px;
+    color:var(--ink);
+    background:rgba(139,59,240,0.10);
+    border:1px solid rgba(200,150,255,0.4);
+    padding:15px 22px;
+    border-radius:14px;
+    cursor:pointer;
+    text-align:left;
+    transition:all .3s ease;
+  }
+  .opt:hover{ border-color:rgba(216,178,92,0.65); background:rgba(139,59,240,0.22); transform:translateX(2px); }
+  .opt.correct{
+    border-color:var(--gold);
+    background:rgba(216,178,92,0.18);
+    box-shadow:0 0 24px rgba(216,178,92,0.35);
+  }
+  .opt.wrong{
+    border-color:rgba(255,90,90,0.35);
+    background:rgba(255,90,90,0.06);
+    opacity:0.55;
+    cursor:not-allowed;
+  }
+  .opt.locked{ pointer-events:none; }
+
+  .feedback{
+    margin-top:22px; font-family:'Cormorant Garamond', serif; font-style:italic;
+    font-size:19px; color:var(--gold-light); min-height:26px; opacity:0;
+    transition:opacity .4s ease;
+    max-width:460px;
+  }
+  .feedback.show{ opacity:1; }
+  .feedback.wrong-tone{ color:var(--violet-bright); }
+
+  .burst-heart{
+    position:fixed; font-size:20px; pointer-events:none; z-index:50;
+    animation:burst-up 1.4s ease-out forwards;
+  }
+  @keyframes burst-up{
+    0%{ transform:translateY(0) scale(0.5); opacity:0; }
+    15%{ opacity:1; }
+    100%{ transform:translateY(-140px) scale(1.1); opacity:0; }
+  }
+
+  .love-reveal{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:700; font-style:italic;
+    font-size:clamp(38px, 10vw, 92px);
+    background:linear-gradient(90deg, var(--violet-bright) 0%, var(--gold-light) 50%, var(--violet-bright) 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 0 40px rgba(139,59,240,0.5));
+    margin-bottom:8px;
+  }
+  .sub-final{
+    font-family:'Cormorant Garamond', serif; font-style:italic;
+    font-size:16px; letter-spacing:0.02em; color:var(--muted);
+  }
+
+  .footer-mark{
+    position:fixed; bottom:16px; left:0; right:0; text-align:center;
+    font-size:10px; letter-spacing:0.22em; color:rgba(205,185,230,0.4);
+    z-index:3;
+  }
+
+  @media (max-width:480px){
+    .options{ max-width:100%; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .particle, .btn, .tap-hint, .burst-heart{ animation:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <div id="particles"></div>
+  <div id="scene-wrap"></div>
+</div>
+<div class="footer-mark">from this birthday, to forever</div>
+
+<script>
+/* ---------------- Particles ---------------- */
+const pWrap = document.getElementById('particles');
+const palette = ['rgba(139,59,240,0.85)','rgba(200,150,255,0.75)','rgba(216,178,92,0.5)'];
+for(let i=0;i<32;i++){
+  const p = document.createElement('div');
+  p.className='particle';
+  const size = 2 + Math.random()*4;
+  p.style.width = size+'px';
+  p.style.height = size+'px';
+  p.style.left = Math.random()*100+'%';
+  p.style.background = palette[i % palette.length];
+  p.style.boxShadow = '0 0 8px ' + palette[i % palette.length];
+  p.style.setProperty('--drift', (Math.random()*60-30)+'px');
+  p.style.animationDuration = (9 + Math.random()*10)+'s';
+  p.style.animationDelay = (Math.random()*10)+'s';
+  pWrap.appendChild(p);
+}
+
+/* ---------------- Data ---------------- */
+const quiz = [
+  { q:"Un voice-la enaku romba pudicha time edhu?", opts:["Calling me with some nickname","While sleeping","During romantic talk"], correct:1,
+    right:"Yes! That sleepy, soft mumbling voice of yours — it’s one of my favourite things to hear. ❤️😍",
+    wrong:{0:"Cute guess, aana adhu illa... think about when your voice gets all sleepy 😅", 2:"Nice try, but adhu illa da... think about when you're barely even awake 😴❤️"}},
+  { q:"Unkita enaku romba pudichadhu edhu?", opts:["Eyes","Lips","Cheeks"], correct:0,
+    right:"Yes! Your eyes — I could get lost in them every single time. 👀❤️",
+    wrong:{1:"Not the lips, kanna... think about the one thing I can never stop looking at👀", 2:"Not the cheeks either — look a little higher, into my eyes 😘"} },
+  
+  { q:"Unna naan first time kupta nickname ena?", opts:["Alaga","Thangam","Baby"], correct:0,
+    right:"Alaga ❤️ — the very first nickname I ever called you… and somehow, it still suits you perfectly. 💜",
+    wrong:{1:"That one came later, not the first 😏", 2:"Nope, that's too generic — I called you something more special first"} },
+ 
+  { q:"Namma first kiss appo nee enna dress potirundha?", opts:["Brown shirt","White shirt","Grey shirt"], correct:0,
+    right:"Brown shirt — I remember exactly how you looked that day 😘",
+    wrong:{1:"Nope, not white... think warmer tone 🤎", 2:"Not grey either, try again love"} },
+ 
+  { q:"Unkooda irukkumbodhu enaku romba pidicha moment edhu?", opts:["Talking","Hugging","Travelling"], correct:0,
+    right:"Talking — I could listen to you for hours, and you know it ❤️",
+    wrong:{1:"I love your hugs too, but that's not the answer here", 2:"Not travelling — think about our quiet moments, just talking"} },
+  
+  { q:"Nee enna pannumbodhu naan romba melt aagiduven?", opts:["Smile","Hug me","Call me lovingly"], correct:2,
+    right:"When you call me lovingly — every single time, without fail 🥹",
+    wrong:{0:"Your smile does melt me too, but that's not this answer 😅", 1:"Not the hug this time — think about your voice"} },
+ 
+  { q:"Namma rendu perum thaniya irukkumbodhu enaku romba pudicha thing edhu?", opts:["Talking","Cuddling","Kissing"], correct:1,
+    right:"Cuddling 🥹💜 — just being wrapped up in your arms, close to you... that's my favourite place to be. 💜",
+    wrong:{0:"Of course, I love talking to you 😌 but that's not the one... think about when I just want to be close to you ❤️", 2:"Nice guess, but think softer — just being close"} },
+ 
+  { q:"Namma first photo together edutha place edhu?", opts:["CSE classroom","First floor admin","Lecture hall"], correct:1,
+    right:"First floor admin — our very first photo together, I still have it 📸",
+    wrong:{0:"Not the CSE classroom, think somewhere else on campus", 2:"Not the lecture hall either, try again"} },
+
+  { q:"Unna kiss panna enakku most favourite place edhu?", opts:["Forehead","Cheeks","Lips","Eyes"], correct:3,
+    right:"Your eyes — kissing them feels like the most gentle thing in the world 😘",
+    wrong:{0:"Not the forehead, though I do love kissing that too", 1:"Close, but not the cheeks", 2:"Not the lips this time — think somewhere softer"} },
+ 
+  { q:"Un hug-la enakku romba pudichadhu edhu?", opts:["Warmth","Feeling safe","Un smell","Ellame"], correct:3,
+    right:"Ellame — the warmth, the safety, your smell, all of it. Every single part 🤍",
+    wrong:{0:"That's part of it, but not the full answer", 1:"Also true, but there's an even bigger answer", 2:"Haha, close, but think bigger — everything about it"} },
+ 
+  { q:"Nee enna name-la koopidumbodhu enakku romba pudikkum?", opts:["Papa","Panni kutty","Baby","All the above"], correct:3,
+    right:"All the above 🥹❤️ — honestly, I love every silly little name you call me. Somehow, they all sound extra special when they come from you. 😍",
+    wrong:{0:"That's definitely one of my favourites 🥹 but there's more...", 1:"Haha yes, but that's not the complete answer", 2:"Also true, but think bigger — all of them"} },
+ 
+  { q:"Enakku un kitta irundhu most addictive thing edhu?", opts:["Hugs","Kisses","Voice","Attention"], correct:2,
+    right:"Your voice — I could listen to it forever, and I mean that 🎧❤️",
+    wrong:{0:"I do love your hugs, but that's not it", 1:"Not the kisses this time — think about what I could listen to all day", 3:"Not attention — think about the sound of you"} },
+ 
+  { q:"Naan un mela kovama irundhaalum, enna pannina udane melt aagiduven?", opts:["Pasama peasuna","Kovama peasuna","Ethuma panama iruntha"], correct:0,
+    right:"When you speak to me softly — that's all it ever takes to melt my heart 🥹",
+    wrong:{1:"Nope, that actually makes it worse, not better 😂", 2:"Silence doesn't melt me, try again"} },
+];
+
+let qIndex = 0;
+let score = 0;
+let attemptsOnThisQ = 0;
+const wrap = document.getElementById('scene-wrap');
+
+/* ---------------- Helpers ---------------- */
+function clearScene(){ wrap.innerHTML=''; }
+
+function mountScene(el){
+  clearScene();
+  wrap.appendChild(el);
+  requestAnimationFrame(()=> el.classList.add('active'));
+}
+
+function burstHearts(x,y,count=14){
+  const symbols = ['❤','💜','✨'];
+  for(let i=0;i<count;i++){
+    const h = document.createElement('div');
+    h.className='burst-heart';
+    h.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+    h.style.left = (x + (Math.random()*160-80))+'px';
+    h.style.top = (y + (Math.random()*40-20))+'px';
+    h.style.color = Math.random()>0.5 ? 'var(--gold-light)' : 'var(--violet-bright)';
+    document.body.appendChild(h);
+    setTimeout(()=> h.remove(), 1500);
+  }
+}
+
+/* ---------------- Scene builders ---------------- */
+function sceneEl(innerHTML){
+  const d = document.createElement('div');
+  d.className='scene';
+  d.innerHTML = innerHTML;
+  return d;
+}
+
+function showCover(){
+  const el = sceneEl(`
+    <div class="cover-heart">✨</div>
+    <div class="eyebrow">A LITTLE SOMETHING FOR YOU</div>
+    <div class="divider"></div>
+    <div class="glow-title">Happy Birthday, My Love</div>
+    <p class="line show" style="font-size:16px; color:var(--muted);">Something small, made only for you.</p>
+    <div class="tap-hint">tap to begin</div>
+  `);
+  mountScene(el);
+  el.addEventListener('click', showLetterOne, { once:true });
+}
+
+function typeLines(container, lines, onDone, delay=650){
+  let i=0;
+  function next(){
+    if(i>=lines.length){ if(onDone) onDone(); return; }
+    const p = document.createElement('p');
+    p.className='line';
+    p.innerHTML = lines[i];
+    container.appendChild(p);
+    requestAnimationFrame(()=> p.classList.add('show'));
+    i++;
+    setTimeout(next, delay);
+  }
+  next();
+}
+
+function showLetterOne(){
+  const el = sceneEl(`<div class="eyebrow">A NOTE FOR TODAY</div><div class="divider"></div><div class="lines"></div>`);
+  mountScene(el);
+  const box = el.querySelector('.lines');
+  typeLines(box, [
+    "I couldn't be beside you this year&hellip;",
+    "but I wanted to make sure you could still feel <em>a little piece of my love</em>, right beside you. ❤️"
+  ], ()=>{
+    const btn = document.createElement('button');
+    btn.className='btn'; btn.textContent='Continue';
+    btn.onclick = showLetterTwo;
+    el.appendChild(btn);
+  });
+}
+
+function showLetterTwo(){
+  const el = sceneEl(`
+    <div class="ring"></div>
+    <div class="eyebrow">A THOUGHT I KEEP COMING BACK TO</div>
+    <div class="divider"></div>
+    <div class="lines"></div>
+  `);
+  mountScene(el);
+  const box = el.querySelector('.lines');
+  typeLines(box, [
+  "Maybe this birthday is the beginning of something even more beautiful… ❤️",
+  "Because next year, I’ll be right beside you,",
+  "celebrating your birthday as <span class=\"accent\">your wife</span>. 💍",
+  "From birthdays as two people in love",
+  "to a lifetime of birthdays as <span class=\"accent\">husband and wife</span>…",
+  "I can’t wait for <span class=\"accent\">our forever</span>. ❤️✨"
+], ()=>{
+    const btn = document.createElement('button');
+    btn.className='btn'; btn.textContent='Continue';
+    btn.onclick = showQuizIntro;
+    el.appendChild(btn);
+  });
+}
+
+function showQuizIntro(){
+  const el = sceneEl(`
+    <div class="cover-heart">❤️</div>
+    <div class="glow-title">How well do you remember us?</div>
+    <p class="line show" style="color:var(--muted); font-size:16px;">${quiz.length} questions, all about us. Get them wrong and you just try again &mdash; no cheating, no peeking. 😏</p>
+    <button class="btn">Start the Quiz</button>
+  `);
+  mountScene(el);
+  el.querySelector('.btn').onclick = ()=>{ qIndex=0; score=0; showQuestion(); };
+}
+
+function showQuestion(){
+  const item = quiz[qIndex];
+  attemptsOnThisQ = 0;
+  const el = sceneEl(`
+    <div class="quiz-progress">QUESTION ${qIndex+1} OF ${quiz.length}</div>
+    <div class="quiz-q">${item.q}</div>
+    <div class="options">
+      ${item.opts.map((o,i)=>`<div class="opt" data-i="${i}">${o}</div>`).join('')}
+    </div>
+    <div class="feedback"></div>
+  `);
+  mountScene(el);
+
+  const feedback = el.querySelector('.feedback');
+
+  function bindOption(optEl){
+    optEl.addEventListener('click', function handler(){
+      const chosen = parseInt(optEl.dataset.i);
+
+      if(chosen === item.correct){
+        if(attemptsOnThisQ === 0) score++;
+        [...el.querySelectorAll('.opt')].forEach(o=>o.classList.add('locked'));
+        optEl.classList.add('correct');
+        const rect = optEl.getBoundingClientRect();
+        burstHearts(rect.left+rect.width/2, rect.top);
+        feedback.classList.remove('wrong-tone');
+        feedback.textContent = item.right;
+        feedback.classList.add('show');
+
+        setTimeout(()=>{
+          const btn = document.createElement('button');
+          btn.className='btn';
+          btn.textContent = qIndex+1 < quiz.length ? 'Next' : 'See how we did';
+          btn.onclick = ()=>{
+            qIndex++;
+            if(qIndex < quiz.length){ showQuestion(); } else { showQuizResult(); }
+          };
+          el.appendChild(btn);
+        }, 700);
+      } else {
+        attemptsOnThisQ++;
+        optEl.classList.add('wrong');
+        optEl.classList.add('locked');
+        optEl.removeEventListener('click', handler);
+        feedback.classList.add('wrong-tone');
+        feedback.textContent = item.wrong[chosen];
+        feedback.classList.add('show');
+      }
+    });
+  }
+
+  [...el.querySelectorAll('.opt')].forEach(bindOption);
+}
+
+function showQuizResult(){
+  const el = sceneEl(`
+    <div class="cover-heart">🥹</div>
+    <div class="glow-title">${score} / ${quiz.length}</div>
+    <p class="line show" style="max-width:520px;">Whatever the score says&hellip; every single memory up there is real, and it's ours.</p>
+    <button class="btn">One last question</button>
+  `);
+  mountScene(el);
+  el.querySelector('.btn').onclick = showFinalQuestion;
+}
+
+function showFinalQuestion(){
+  const el = sceneEl(`
+    <div class="eyebrow">LAST ONE</div>
+    <div class="divider"></div>
+    <div class="lines"></div>
+  `);
+  mountScene(el);
+  const box = el.querySelector('.lines');
+  typeLines(box, [
+    "In this whole quiz, however many you got right&hellip;",
+    "there's only <em>one</em> answer that has ever really mattered to me.",
+    "Do you know what it is?"
+  ], ()=>{
+    const btn = document.createElement('button');
+    btn.className='btn'; btn.textContent='I know the answer';
+    btn.onclick = (e)=>{
+      const rect = e.target.getBoundingClientRect();
+      burstHearts(rect.left+rect.width/2, rect.top, 22);
+      setTimeout(showReveal, 500);
+    };
+    el.appendChild(btn);
+  }, 900);
+}
+
+function showReveal(){
+  const el = sceneEl(`
+    <div class="love-reveal">I LOVE YOU</div>
+    <div class="sub-final">and I will keep choosing you, every single day</div>
+    <button class="btn">Keep reading</button>
+  `);
+  mountScene(el);
+  burstHearts(window.innerWidth/2, window.innerHeight*0.4, 26);
+  el.querySelector('.btn').onclick = showFinalCard;
+}
+
+function showFinalCard(){
+  const el = sceneEl(`
+    <div class="ring"></div>
+    <div class="glow-title">From this birthday&hellip; to forever.</div>
+    <p class="line show" style="color:var(--muted); max-width:480px; font-style:italic;">Happy Birthday, my love. Here's to this one as just us two &mdash; and to every one after, as husband and wife.💜</p>
+    <button class="btn" id="replay-btn">Watch it again</button>
+  `);
+  mountScene(el);
+  document.getElementById('replay-btn').onclick = showCover;
+}
+
+/* ---------------- Boot ---------------- */
+showCover();
+</script>
+</body>
+</html>
